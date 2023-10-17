@@ -114,3 +114,42 @@ def get_blog_articles_data(refresh=False):
         blog_article_df.to_csv('blog_articles.csv', index=False)
         
     return pd.read_csv('blog_articles.csv')
+
+
+def get_news_articles_data(refresh=False):
+    
+    if not os.path.isfile('news_articles.csv') or refresh:
+        
+        url = 'https://inshorts.com/en/read'
+        response = get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        categories = [li.text.lower() for li in soup.select('li')][1:]
+        categories[0] = 'national'
+
+        inshorts = []
+
+        for category in categories:
+
+            cat_url = url + '/' + category
+            response = get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            titles = [span.text for span in soup.find_all('span', itemprop='headline')]
+            contents = [div.text for div in soup.find_all('div', itemprop='articleBody')]
+
+            for i in range(len(titles)):
+
+                article = {
+                    'title': titles[i],
+                    'content': contents[i],
+                    'category': category,
+                }
+
+                inshorts.append(article)
+                
+        inshorts_article_df = pd.DataFrame(inshorts)
+        
+        inshorts_article_df.to_csv('news_articles.csv', index=False)
+                
+    return pd.read_csv('news_articles.csv')
