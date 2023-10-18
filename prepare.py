@@ -84,11 +84,17 @@ def remove_stopwords(text, extra_words = None, exclude_words = None):
     return text_without_stopwords
 
 
-def advanced_clean(text, l = False, s = False):
+def advanced_clean(text, l = False, s = False, extra_words = None, exclude_words = None):
+    
+    if extra_words is None:
+        extra_words = []
+        
+    if exclude_words is None:
+        exclude_words = [] 
     
     text = basic_clean(text)
     text = tokenize(text)
-    text = remove_stopwords(text, extra_words = ['r', 'u', '2', '4', 'ltgt'])
+    text = remove_stopwords(text, extra_words = extra_words, exclude_words = exclude_words)
     
     if l is not False:
         
